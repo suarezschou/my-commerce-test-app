@@ -1,13 +1,13 @@
-// pages/products/[id].tsx
-import { apiRoot } from '../apiClientConfig'; // Import your Commercetools client
+'use client'
+import { apiRoot } from '../../apiClientConfig'; // Import your Commercetools client
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
- // Import the useRouter hook
+import { useParams } from 'next/navigation';
+
 
 const ProductDetailsPage: React.FC = () => {
-  const router = useRouter();
-  const { id } = router.query; // Get the product ID from the URL
+  
+  const { id } = useParams(); // Get the product ID from the URL
   const [product, setProduct] = useState<ProductProjection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ const ProductDetailsPage: React.FC = () => {
             .get()
             .execute();
 
-          setProduct(body);
+          setProduct(body); 
         } catch (err: any) {
           console.error("Error fetching product:", err);
           setError(err.message || "Failed to fetch product.");
