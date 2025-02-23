@@ -3,6 +3,23 @@ import { apiRoot } from '../../apiClientConfig'; // Import your Commercetools cl
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import ProductList from '../../productList';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
 
 
 const ProductDetailsPage: React.FC = () => {
@@ -52,18 +69,45 @@ const ProductDetailsPage: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1>{product.name?.['en-US'] || "Product Name Unavailable"}</h1>
+<div className='font-extralight thin flex flex-col items-center min-h'>
+  <Card>
+  <CardHeader>
+      <CardTitle>
+        <h1 className='text-3xl'>{product.name?.['en-US'] || "Product Name Unavailable"}</h1>
+      </CardTitle>
+      <CardDescription>
+        100% økologisk merinould
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
       {product.masterVariant.images && product.masterVariant.images.length > 0 && (
         <img src={product.masterVariant.images[0].url} alt={product.name?.['en-US'] || "Product Image"} width={300} />
       )}
-      <p>{product.description?.['en-US'] || "No Description Available"}</p>
-      <p>
-        Price: {product.masterVariant.prices && product.masterVariant.prices.length > 0 ? product.masterVariant.prices[0].value.centAmount / 100 : "N/A"}{" "}
-        {product.masterVariant.prices && product.masterVariant.prices.length > 0 ? product.masterVariant.prices[0].value.currencyCode : "N/A"}
-      </p>
-      {/* ... other product details */}
-    </div>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionTrigger className='text-xl'>Beskrivelse</AccordionTrigger>
+            <AccordionContent>
+              <p className='text-sm'>{product.description?.['en-US'] || "No Description Available"}</p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>     
+    </CardContent>
+    
+    <CardFooter>
+      <p className='text-3xl'> {product.masterVariant.prices && product.masterVariant.prices.length > 0 ? product.masterVariant.prices[0].value.centAmount / 100 : "N/A"}{" "}
+      {product.masterVariant.prices && product.masterVariant.prices.length > 0 ? product.masterVariant.prices[0].value.currencyCode : "N/A"}
+      </p>   
+    </CardFooter>
+    <CardFooter>
+      <Button className='font-thin text-3xl flex flex-row p-10'>Tilføj til kurv</Button>
+    </CardFooter>
+  </Card>
+  <CardTitle>
+  <h1 className='p-10 text-3xl'>Måske kan du også lide</h1>
+  </CardTitle>
+  <ProductList />
+     
+</div>
   );
 };
 

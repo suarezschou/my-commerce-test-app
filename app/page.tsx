@@ -59,6 +59,7 @@ export default function Home() {
     <div className='flex flex-col items-center'>
       <h2>Project details for {PROJECT_KEY}:</h2>
       <pre>{JSON.stringify(projectDetails, null, 2)}</pre>
+      
       <ProductList />
       
     </div>

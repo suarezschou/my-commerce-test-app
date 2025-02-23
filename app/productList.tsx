@@ -1,8 +1,16 @@
-import Link from 'next/link'
 import { apiRoot } from './apiClientConfig'; // Your Commercetools client
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { useState, useEffect } from 'react';
-
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 interface ProductListProps {
   // You can add props here if needed, e.g., category ID for filtering
 }
@@ -42,11 +50,14 @@ const ProductList: React.FC<ProductListProps> = ({  }) => {
   }
   console.log(products)
   return (
-    <ul>
+    <ul className='p-10 grid grid-cols-2'>
       {products.map((product) => (
-        <li key={product.id}>
-          
-          <h2>{product.name['en-US']}</h2> 
+        <Card key={product.id}>
+          <li>
+          <CardHeader>
+            <h2>{product.name['en-US']}</h2> 
+          </CardHeader>
+          <CardContent>
             {product.masterVariant.images && product.masterVariant.images.length > 0 && (
               <img src={product.masterVariant.images[0].url} alt={product.name.en} width={200} />
             )}
@@ -54,14 +65,18 @@ const ProductList: React.FC<ProductListProps> = ({  }) => {
             {product.masterVariant.prices && product.masterVariant.prices.length > 0 && (
               <p>Price: {product.masterVariant.prices[0].value.centAmount / 100} {product.masterVariant.prices[0].value.currencyCode}</p>
             )}
-            <Link
-              href={`/products/${product.id}`}
-              className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-            >
-              View Details
-            </Link>
-            
-        </li>
+          </CardContent>
+          <CardFooter>
+            <Button>
+              <Link
+                href={`/products/${product.id}`}               
+                >
+                View Details
+              </Link>
+            </Button>
+          </CardFooter>
+          </li>
+        </Card>
       ))}
     </ul>
   );
