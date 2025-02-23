@@ -52,6 +52,42 @@ const ProductDetailsPage: React.FC = () => {
     }
   }, [id]); // Add id to the dependency array
 
+  const [categoryNames, setCategoryNames] = useState<Record<string, string>>({});
+  
+  useEffect(() => {
+    async function fetchCategoryNames() {
+      if (product && product.categories) {
+        const categoryIds = product.categories.map((category) => category.id);
+
+        try {
+          const categoryPromises = categoryIds.map(async (categoryId) => {
+            const { body } = await apiRoot
+              .withProjectKey({ projectKey: 'my_test_project' }).categories()
+              .withId({ ID: categoryId })
+              .get()
+              .execute();
+            return { id: categoryId, name: body.name['en-US'] || body.name['en'] || "Category Name Unavailable" };
+          });
+
+          const categoryDetails = await Promise.all(categoryPromises);
+
+          const names: Record<string, string> = {};
+          categoryDetails.forEach(category => {
+            names[category.id] = category.name;
+          });
+
+          setCategoryNames(names);
+
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          setCategoryNames({}); // Clear category names on error
+        }
+      }
+    }
+
+    fetchCategoryNames();
+  }, [product]);
+
   if (!id) {
     return <div>Product ID is missing.</div>; // Handle cases where ID isn't available yet
   }
@@ -75,8 +111,11 @@ const ProductDetailsPage: React.FC = () => {
       <CardTitle>
         <h1 className='text-3xl'>{product.name?.['en-US'] || "Product Name Unavailable"}</h1>
       </CardTitle>
-      <CardDescription>
-        100% økologisk merinould
+      <CardDescription className='max-w-lg'>
+        
+        {product.categories
+            ?.map((category) => categoryNames[category.id] || "Loading...")
+            .join(", ") || "No Category"}
       </CardDescription>
     </CardHeader>
     <CardContent>
@@ -86,8 +125,8 @@ const ProductDetailsPage: React.FC = () => {
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger className='text-xl'>Beskrivelse</AccordionTrigger>
-            <AccordionContent>
-              <p className='text-sm'>{product.description?.['en-US'] || "No Description Available"}</p>
+            <AccordionContent className='max-w-lg'>
+              <p className='text-sm  '>{product.description?.['en-US'] || "No Description Available"}</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>     
