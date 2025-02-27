@@ -1,5 +1,5 @@
 'use client'
-import { apiRoot } from '../../apiClientConfig'; // Import your Commercetools client
+import { apiRoot } from '../../lib/commercetools'; // Import your Commercetools client
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import ProductList from '../../productList';
+import ProductList from '@/app/components/productList';
 import {
   Accordion,
   AccordionContent,
@@ -33,7 +33,8 @@ const ProductDetailsPage: React.FC = () => {
     if (id) { // Only fetch if id is available
       async function fetchProduct() {
         try {
-          const { body } = await apiRoot.withProjectKey({ projectKey: 'my_test_project' })
+          const { body } = await apiRoot
+            .withProjectKey({ projectKey: process.env.CTP_PROJECT_KEY || '' })
             .productProjections()
             .withId({ ID: id as string }) // Use the withId method
             .get()
@@ -111,11 +112,12 @@ const ProductDetailsPage: React.FC = () => {
       <CardTitle>
         <h1 className='text-3xl'>{product.name?.['en-US'] || "Product Name Unavailable"}</h1>
       </CardTitle>
-      <CardDescription className='max-w-lg'>
-        
+      <CardDescription className='max-w-lg text-bold '>
+        <strong>
         {product.categories
             ?.map((category) => categoryNames[category.id] || "Loading...")
             .join(", ") || "No Category"}
+        </strong>
       </CardDescription>
     </CardHeader>
     <CardContent>

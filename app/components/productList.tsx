@@ -1,4 +1,4 @@
-import { apiRoot } from './apiClientConfig'; // Your Commercetools client
+"use client"
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -11,8 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { apiRoot } from '../lib/commercetools';
+
 interface ProductListProps {
-  // You can add props here if needed, e.g., category ID for filtering
+  // Define any props here if needed
 }
 
 const ProductList: React.FC<ProductListProps> = ({  }) => {
@@ -23,7 +25,8 @@ const ProductList: React.FC<ProductListProps> = ({  }) => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const { body } = await apiRoot.withProjectKey({ projectKey: 'my_test_project' })
+        const { body } = await apiRoot
+          .withProjectKey({ projectKey: process.env.CTP_PROJECT_KEY || '' })
           .productProjections()
           .search()
           .get()

@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={` ${playfair_display.variable} antialiased`}
+        className={` ${playfair_display.variable} ${montserrat.variable} antialiased`}
       >
         {children}
       </body>
