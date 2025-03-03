@@ -2,18 +2,18 @@ import { apiRoot } from '../lib/commercetools';
 
 const PROJECT_KEY = process.env.CTP_PROJECT_KEY || "";
 
-export async function createCart(currency: string = 'EUR'){
+export async function createCart(){
   try {
     const response = await apiRoot
       .withProjectKey({ projectKey: PROJECT_KEY })
       .carts()
       .post({
         body: {
-          currency: currency,
-          country: 'US', 
+          currency: 'EUR',
+          country: 'DE', 
           inventoryMode: 'ReserveOnOrder',
           taxMode: 'Platform',
-          lineItems: [], // Start with an empty cart
+          lineItems: [], //empty line items
           shippingAddress: undefined, 
         },
       })

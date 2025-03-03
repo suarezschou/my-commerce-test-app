@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react';
-import { createNewCart } from '../actions/route';
+import { createNewCart } from '@/app/actions/cart';
 
 export default function CreateCartButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,8 +25,9 @@ export default function CreateCartButton() {
   };
 
   return (
-    <button className='bg-orange-500' onClick={handleCreateCart} disabled={isLoading}>
-      {isLoading ? 'Creating Cart...' : 'Create New Cart'}  
+    <button className='bg-orange-400' onClick={handleCreateCart} disabled={isLoading}>
+      {isLoading ? 'Creating Cart...' : 'Create New Cart'}
     </button>
+    
   );
 }
