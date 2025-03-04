@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/accordion"
 import { createNewCart, addProductToCart } from "@/app/actions/cart"
 import { createCart } from '@/app/components/createCart';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -32,6 +33,7 @@ const ProductDetailsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [cartId, setCartId] = useState<string | null>(null)
   const [addingToCart, setAddingToCart] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     if (id) { // Only fetch if id is available
@@ -99,15 +101,27 @@ const ProductDetailsPage: React.FC = () => {
     setAddingToCart(true)
     try {
       let currentCartId = cartId
+      let currentCartVersion = 1
+
       if (!currentCartId) {
         const newCart = await createCart()
         currentCartId = newCart.id
+        currentCartVersion = newCart.version
         setCartId(currentCartId)
+      } else {
+        // Fetch the current cart to get the latest version
+        const { body } = await apiRoot
+          .withProjectKey({ projectKey: process.env.CTP_PROJECT_KEY || '' })
+          .carts()
+          .withId({ ID: currentCartId })
+          .get()
+          .execute()
+        currentCartVersion = body.version
       }
 
       await addProductToCart(
         currentCartId!,
-        1, // Assuming version 1 for a new cart, you might need to handle this differently
+        currentCartVersion, // Assuming version 1 for a new cart, you might need to handle this differently
         product.id,
         product.masterVariant.id,
         1, // Quantity, you might want to make this dynamic
@@ -115,6 +129,16 @@ const ProductDetailsPage: React.FC = () => {
 
       // Optionally, you can update the UI to show the product was added successfully
       console.log("Product added to cart successfully")
+      const addedItem = {
+        id: product.id,
+        productId: product.id,
+        name: product.name?.['en-US'] || "Product Name Unavailable",
+        quantity: 1,
+        price: product.masterVariant.prices && product.masterVariant.prices.length > 0 ? product.masterVariant.prices[0].value.centAmount / 100 : "N/A",
+      };
+
+      router.push(`/cart/${currentCartId}`)
+
     } catch (error) {
       console.error("Failed to add product to cart:", error)
       // Optionally, show an error message to the user
@@ -183,7 +207,7 @@ const ProductDetailsPage: React.FC = () => {
   <h1 className='p-10 text-3xl'>Måske kan du også lide</h1>
   </CardTitle>
   <ProductList />
-     
+    
 </div>
   );
 };

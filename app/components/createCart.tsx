@@ -1,8 +1,9 @@
+import { Cart } from '@commercetools/platform-sdk';
 import { apiRoot } from '../lib/commercetools';
 
 const PROJECT_KEY = process.env.CTP_PROJECT_KEY || "";
 
-export async function createCart(){
+export async function createCart(): Promise<Cart> {
   try {
     const response = await apiRoot
       .withProjectKey({ projectKey: PROJECT_KEY })

@@ -1,13 +1,15 @@
-import { apiRoot } from '../lib/commercetools';
+import { apiRoot } from "../lib/commercetools"
+import type { Cart } from "@commercetools/platform-sdk"
 
-const PROJECT_KEY = process.env.CTP_PROJECT_KEY || '';
+const PROJECT_KEY = process.env.CTP_PROJECT_KEY || ""
 
-export async function addProductToCart( 
+export async function addProductToCart(
   cartId: string,
   version: number,
   productId: string,
   variantId: number,
-  quantity: number
+  quantity: number,
+  router: any, // Add router parameter
 ) {
   try {
     const response = await apiRoot
@@ -19,7 +21,7 @@ export async function addProductToCart(
           version: version,
           actions: [
             {
-              action: 'addLineItem',
+              action: "addLineItem",
               productId: productId,
               variantId: variantId,
               quantity: quantity,
@@ -27,10 +29,18 @@ export async function addProductToCart(
           ],
         },
       })
-      .execute();
-    return response;
+      .execute()
+
+    const updatedCart: Cart = response.body // Extract the cart from the response.
+    console.log("cart id being passed to url", updatedCart.id)
+
+    // Navigate to the cart page using route parameters instead of query parameters
+    router.push(`/cart/${updatedCart.id}`)
+
+    return response
   } catch (error) {
-    console.error('Error adding product to cart:', error);
-    throw error;
+    console.error("Error adding product to cart:", error)
+    throw error
   }
 }
+

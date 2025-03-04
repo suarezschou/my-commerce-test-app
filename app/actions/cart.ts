@@ -4,7 +4,7 @@ import { apiRoot } from '../lib/commercetools';
 
 const PROJECT_KEY = process.env.CTP_PROJECT_KEY || ""
 
-export async function createNewCart(_currency: string = 'EUR') {
+export async function createNewCart() {
   try {
     const cart = await createCart();
     return { success: true, cart };

@@ -1,5 +1,6 @@
 import ProductList from "@/app/components/productList"
 import CreateCartButton from "./components/CreateCartButton";
+import CartPage from "./cart/[cartId]/page";
 require('dotenv').config();
 
 
@@ -9,9 +10,10 @@ export default function Home() {
         
       <h1 className="text-4xl">Products</h1>
       
+      <CartPage />
       <CreateCartButton />
       <ProductList />
-
+      
     </div>
   )
 }
