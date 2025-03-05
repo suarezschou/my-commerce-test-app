@@ -42,7 +42,7 @@ export async function addProductToCart(
       })
       .execute()
 
-    return response.body
+    return response
   } catch (error) {
     console.error("Error adding product to cart:", error)
     throw error

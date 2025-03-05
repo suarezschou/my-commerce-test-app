@@ -2,10 +2,12 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createNewCart } from '@/app/actions/cart';
+import { useCart } from '../context/CartContext';
 
 export default function CreateCartButton() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { setCartId } = useCart();
 
   const handleCreateCart = async () => {
     setIsLoading(true);
@@ -15,6 +17,8 @@ export default function CreateCartButton() {
         console.log('New cart created:', result.cart);
         if (result.cart) {
           const cartId = result.cart.id;
+          setCartId(cartId); // Set the cartId in the context
+
           router.push(`/cart/${cartId}`);
           
         } else {

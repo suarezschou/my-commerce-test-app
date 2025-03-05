@@ -3,7 +3,6 @@ import { apiRoot } from '../../lib/commercetools'; // Import your Commercetools 
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -19,11 +18,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { createNewCart, addProductToCart } from "@/app/actions/cart"
-import { createCart } from '@/app/components/createCart';
 import { useRouter } from 'next/navigation';
-
-
+import AddToCart from '@/app/components/addToCart';
 
 const ProductDetailsPage: React.FC = () => {
   
@@ -31,8 +27,6 @@ const ProductDetailsPage: React.FC = () => {
   const [product, setProduct] = useState<ProductProjection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cartId, setCartId] = useState<string | null>(null)
-  const [addingToCart, setAddingToCart] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -95,58 +89,7 @@ const ProductDetailsPage: React.FC = () => {
     fetchCategoryNames();
   }, [product]);
 
-  const handleAddToCart = async () => {
-    if (!product) return
-
-    setAddingToCart(true)
-    try {
-      let currentCartId = cartId
-      let currentCartVersion = 1
-
-      if (!currentCartId) {
-        const newCart = await createCart()
-        currentCartId = newCart.id
-        currentCartVersion = newCart.version
-        setCartId(currentCartId)
-      } else {
-        // Fetch the current cart to get the latest version
-        const { body } = await apiRoot
-          .withProjectKey({ projectKey: process.env.CTP_PROJECT_KEY || '' })
-          .carts()
-          .withId({ ID: currentCartId })
-          .get()
-          .execute()
-        currentCartVersion = body.version
-      }
-
-      await addProductToCart(
-        currentCartId!,
-        currentCartVersion, // Assuming version 1 for a new cart, you might need to handle this differently
-        product.id,
-        product.masterVariant.id,
-        1, // Quantity, you might want to make this dynamic
-      )
-
-      // Optionally, you can update the UI to show the product was added successfully
-      console.log("Product added to cart successfully")
-      const addedItem = {
-        id: product.id,
-        productId: product.id,
-        name: product.name?.['en-US'] || "Product Name Unavailable",
-        quantity: 1,
-        price: product.masterVariant.prices && product.masterVariant.prices.length > 0 ? product.masterVariant.prices[0].value.centAmount / 100 : "N/A",
-      };
-
-      router.push(`/cart/${currentCartId}`)
-
-    } catch (error) {
-      console.error("Failed to add product to cart:", error)
-      // Optionally, show an error message to the user
-    } finally {
-      setAddingToCart(false)
-    }
-  }
-
+  
 
   if (!id) {
     return <div>Product ID is missing.</div>; // Handle cases where ID isn't available yet
@@ -199,8 +142,7 @@ const ProductDetailsPage: React.FC = () => {
       </p>   
     </CardFooter>
     <CardFooter>
-      <Button className='font-thin text-3xl flex flex-row p-10' onClick={handleAddToCart} disabled={addingToCart}>
-          {addingToCart ? "Adding to Cart..." : "Tilføj til kurv"}</Button>
+      <AddToCart product={product} />
     </CardFooter>
   </Card>
   <CardTitle>

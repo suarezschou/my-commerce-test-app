@@ -1,46 +1,75 @@
-import { apiRoot } from "../lib/commercetools"
-import type { Cart } from "@commercetools/platform-sdk"
+"use client"
 
-const PROJECT_KEY = process.env.CTP_PROJECT_KEY || ""
+import type React from "react"
 
-export async function addProductToCart(
-  cartId: string,
-  version: number,
-  productId: string,
-  variantId: number,
-  quantity: number,
-  router: any, // Add router parameter
-) {
-  try {
-    const response = await apiRoot
-      .withProjectKey({ projectKey: PROJECT_KEY })
-      .carts()
-      .withId({ ID: cartId })
-      .post({
-        body: {
-          version: version,
-          actions: [
-            {
-              action: "addLineItem",
-              productId: productId,
-              variantId: variantId,
-              quantity: quantity,
-            },
-          ],
-        },
-      })
-      .execute()
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { addProductToCart, createNewCart } from "@/app/actions/cart"
+import { fetchCart } from "@/app/actions/fetchCart"
+import { useCart } from "@/app/context/CartContext"
+import type { ProductProjection } from "@commercetools/platform-sdk"
 
-    const updatedCart: Cart = response.body // Extract the cart from the response.
-    console.log("cart id being passed to url", updatedCart.id)
-
-    // Navigate to the cart page using route parameters instead of query parameters
-    router.push(`/cart/${updatedCart.id}`)
-
-    return response
-  } catch (error) {
-    console.error("Error adding product to cart:", error)
-    throw error
-  }
+interface AddToCartProps {
+  product: ProductProjection | null
 }
+
+const AddToCart: React.FC<AddToCartProps> = ({ product }) => {
+  const [addingToCart, setAddingToCart] = useState(false)
+  const router = useRouter()
+  const { cartId, setCartId } = useCart()
+
+  const handleAddToCart = async () => {
+    if (!product) return
+    setAddingToCart(true)
+    try {
+      let currentCartId = cartId
+      let currentCartVersion: number
+
+      if (currentCartId) {
+        try {
+          const currentCart = await fetchCart(currentCartId)
+          currentCartVersion = currentCart.version
+          console.log("Current cart version:", currentCartVersion)
+        } catch (error) {
+          console.error("Failed to fetch current cart, creating a new one:", error)
+          const newCart = await createNewCart()
+          if (newCart.cart) {
+            currentCartId = newCart.cart.id
+            currentCartVersion = newCart.cart.version
+            setCartId(currentCartId)
+          } else {
+            throw new Error("Failed to create a new cart")
+          }
+        }
+      } else {
+        const newCart = await createNewCart()
+        if (newCart.cart) {
+          currentCartId = newCart.cart.id
+          currentCartVersion = newCart.cart.version
+          setCartId(currentCartId)
+        } else {
+          throw new Error("Failed to create a new cart")
+        }
+      }
+
+      await addProductToCart(currentCartId, currentCartVersion, product.id, product.masterVariant.id, 1)
+
+      console.log("Product added to cart successfully")
+      router.push(`/cart/${currentCartId}`)
+    } catch (error) {
+      console.error("Failed to add product to cart:", error)
+    } finally {
+      setAddingToCart(false)
+    }
+  }
+
+  return (
+    <Button className="font-thin text-3xl flex flex-row p-10" onClick={handleAddToCart} disabled={addingToCart}>
+      {addingToCart ? "Adding to Cart..." : "Tilføj til kurv"}
+    </Button>
+  )
+}
+
+export default AddToCart
 
