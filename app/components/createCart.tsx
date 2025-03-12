@@ -26,3 +26,6 @@ export async function createCart(): Promise<Cart> {
     throw error;
   }
 }
+export async function createNewCart() { //added createNewCart function to return the cart
+  return await createCart();
+}

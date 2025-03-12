@@ -1,92 +1,137 @@
 "use client"
 import { useState, useEffect } from "react"
+import type React from "react"
 import { fetchCart } from "@/app/actions/fetchCart"
-import { Cart, LineItem } from "@commercetools/platform-sdk"
+import type { Cart, ProductProjection } from "@commercetools/platform-sdk"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useCart } from "@/app/context/CartContext" // Import useCart
+import { useCart } from "@/app/context/CartContext"
+import Cookies from "js-cookie"
+import { fetchProductProjection } from "@/app/actions/fetchProductProjection"
+import { fetchAnonymousCart } from "@/app/actions/fetchAnonymousCart" 
+
+interface EnrichedCartItem {
+  productId: string
+  variantId: number
+  quantity: number
+  productProjection?: ProductProjection; 
+}
 
 const CartPage: React.FC = () => {
-    const [cart, setCart] = useState<Cart | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
-    const router = useRouter()
-    const { cartId } = useCart() // Get cartId from context
+  const [cart, setCart] = useState<Cart | null>(null)
+  const [anonymousCartItems, setAnonymousCartItems] = useState<EnrichedCartItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  const { cartId } = useCart()
+  const anonymousId = Cookies.get("anonymousId")
 
-    console.log("cartId from context:", cartId)
+  useEffect(() => {
+    console.log("useEffect: anonymousId =", anonymousId)
 
-    useEffect(() => {
-        if (cartId) {
-            async function fetchCartItems() {
+    if (anonymousId) {
+      // Fetch anonymous cart using fetchAnonymousCart
+      fetchAnonymousCart(anonymousId)
+        .then(async (cartData) => {
+          if (cartData && cartData.value) {
+            const enrichedItems = await Promise.all(
+              cartData.value.map(async (item: any) => {
                 try {
-                    const cartData = await fetchCart(cartId as string)
-                    console.log("cartData:", cartData)
-                    setCart(cartData)
-                } catch (err: any) {
-                    console.error("Error fetching cart:", err)
-                    setError(err.message || "Failed to fetch cart.")
-                } finally {
-                    setLoading(false)
+                  console.log("Fetching product projection for productId:", item.productId);
+                  const productProjection = await fetchProductProjection(item.productId)
+                  return { ...item, productProjection }
+                } catch (err) {
+                  console.error("Error fetching product projection:", err)
+                  return { ...item, productProjection: null }
                 }
-            }
-
-            fetchCartItems()
-        } else {
-            setLoading(false)
+              }),
+            )
+            setAnonymousCartItems(enrichedItems)
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching anonymous cart:", err)
+          setError(err.message || "Failed to fetch anonymous cart.")
+        })
+        .finally(() => setLoading(false))
+    } else if (cartId) {
+      async function fetchCartItems() {
+        try {
+          const cartData = await fetchCart(cartId as string)
+          setCart(cartData)
+        } catch (err: any) {
+          console.error("Error fetching cart:", err)
+          setError(err.message || "Failed to fetch cart.")
+        } finally {
+          setLoading(false)
         }
-    }, [cartId])
-
-    if (loading) {
-        return <div>Loading cart...</div>
+      }
+      fetchCartItems()
+    } else {
+      setLoading(false)
     }
+  }, [cartId, anonymousId])
 
-    if (error) {
-        return <div>Error: {error}</div>
-    }
+  if (loading) {
+    return <div>Loading cart...</div>
+  }
 
-    if (!cart) {
-        return <div>Cart not found.</div>
-    }
+  if (error) {
+    return <div>Error: {error}</div>
+  }
 
-    return (
-        <div className="font-extralight thin flex flex-col items-center min-h">
-            <Card>
-                <CardHeader>
-                    <CardTitle>
-                        <h1 className="text-3xl">Your Cart</h1>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {cart.lineItems.length > 0 ? (
-                        cart.lineItems.map((item: LineItem) => (
-                            <div key={item.id} className="mb-4">
-                                <h2 className="text-xl">{item.name["en-US"] || "Product Name Unavailable"}</h2>
-                                {item.variant.images && item.variant.images.length > 0 && (
-                                    <img
-                                        src={item.variant.images[0].url || "/placeholder.svg"}
-                                        alt={item.name["en-US"] || "Product Image"}
-                                        width={100}
-                                    />
-                                )}
-                                <p>Quantity: {item.quantity}</p>
-                                <p>
-                                    Price: {item.price.value.centAmount / 100} {item.price.value.currencyCode}
-                                </p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>Your cart is empty.</p>
-                    )}
-                </CardContent>
-                <CardFooter>
-                    <Button className="font-thin text-3xl flex flex-row p-10" onClick={() => router.push("/checkout")}>
-                        Proceed to Checkout
-                    </Button>
-                </CardFooter>
-            </Card>
-        </div>
-    )
+  let itemsToRender: any[] = []
+  if (anonymousCartItems.length > 0) {
+    itemsToRender = anonymousCartItems
+  } else if (cart && cart.lineItems) {
+    itemsToRender = cart.lineItems
+  }
+
+  return (
+    <div className="font-extralight thin flex flex-col items-center min-h">
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <h1 className="text-3xl">Your Cart</h1>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {itemsToRender.length > 0 ? (
+            itemsToRender.map((item: any) => (
+              <div key={item.id || `${item.productId}-${item.variantId}`} className="mb-4">
+                {item.productProjection &&
+                  item.productProjection.masterData &&
+                  item.productProjection.masterData.current &&
+                  item.productProjection.masterData.current.masterVariant &&
+                  item.productProjection.masterData.current.masterVariant.images &&
+                  item.productProjection.masterData.current.masterVariant.images.length > 0 && (
+                    <img
+                        src={item.productProjection.masterData.current.masterVariant.images[0].url}
+                        alt={item.productProjection.name?.["en-US"] || "Product Image"}
+                        style={{ maxWidth: "150px", maxHeight: "150px" }}
+                    />
+                )}
+                
+                <h2 className="text-2xl">
+                    {item.productProjection?.masterData?.current?.name?.["en-US"] || item.productId || "Product Name Unavailable"}
+                </h2>
+                <p>Quantity: {item.quantity}</p>
+              </div>
+            ))
+          ) : (
+            <p>Your cart is empty.</p>
+          )}
+        </CardContent>
+        <CardFooter>
+          <Button className="font-thin text-3xl flex flex-row p-10" onClick={() => router.push("/checkout")}>
+            Proceed to Checkout
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  )
 }
 
 export default CartPage
+

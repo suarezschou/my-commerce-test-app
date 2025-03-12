@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@commercetools/platform-sdk": "^8.2.0",
+    "@commercetools/platform-sdk": "^8.5.0",
     "@commercetools/sdk-client": "^3.0.0",
     "@commercetools/sdk-middleware-auth": "^7.0.1",
     "@commercetools/sdk-middleware-http": "^7.0.4",
@@ -20,14 +20,17 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.475.0",
-    "next": "^15.1.7",
+    "next": "^15.2.2-canary.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/node-fetch": "^2.6.12",
     "@types/react": "^19",
