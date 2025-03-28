@@ -11,12 +11,15 @@
   "dependencies": {
     "@commercetools/platform-sdk": "^8.5.0",
     "@commercetools/sdk-client": "^3.0.0",
+    "@commercetools/sdk-client-v2": "^3.0.0",
     "@commercetools/sdk-middleware-auth": "^7.0.1",
     "@commercetools/sdk-middleware-http": "^7.0.4",
     "@commercetools/sdk-middleware-queue": "^3.0.0",
     "@commercetools/ts-client": "^3.0.4",
     "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/themes": "^3.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
@@ -25,6 +28,7 @@
     "next": "^15.2.2-canary.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "shadcn": "^2.4.0-canary.17",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0"
