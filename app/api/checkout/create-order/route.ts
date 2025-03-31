@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server"
+import { fetchAnonymousCart } from "@/app/actions/fetchAnonymousCart"
+import { createCommercetoolsOrder } from "@/app/actions/createCommercetoolsOrder"
+
 
 export async function POST(request: Request) {
   try {
@@ -9,14 +12,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Anonymous ID is required" }, { status: 400 })
     }
 
-    // Here you would:
-    // 1. Fetch the anonymous cart from commercetools using the anonymousId
-    // 2. Process the payment (or create a payment object in commercetools)
-    // 3. Create an order from the cart in commercetools
-    // 4. Return the order details
+    const anonymousCartObj = await fetchAnonymousCart(anonymousId)
 
-    // This is a placeholder for the actual implementation
-    // In a real app, you would use the commercetools SDK
+    if (!anonymousCartObj || !anonymousCartObj.value) {
+      return NextResponse.json({ error: "Cart not found" }, { status: 404 })
+    }
+
+    const cartItems = anonymousCartObj.value.items; // Extract cart items
+
+    // Create the order in Commercetools
+    const order = await createCommercetoolsOrder(cartItems, shippingInfo, paymentInfo);
+
+
+    // Implement clearing => await clearAnonymousCart(anonymousId);
 
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 1000))

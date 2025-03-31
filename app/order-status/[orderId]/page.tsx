@@ -1,6 +1,6 @@
 import { Suspense } from "react"
-import { OrderDetails } from "@/components/order/order-details"
-import { OrderStatusSkeleton } from "@/components/order/order-status-skeleton"
+import { OrderDetails } from "../../components/order/order-details"
+import { OrderStatusSkeleton } from "../../components/order/order-status-skeleton"
 
 export default function OrderStatusPage({ params }: { params: { orderId: string } }) {
   return (

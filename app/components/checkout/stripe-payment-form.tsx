@@ -8,6 +8,7 @@ import { getStripe } from "@/utils/get-stripe"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
+import Cookies from "js-cookie"
 
 // Wrapper component that provides Stripe Elements
 export function StripePaymentForm({
@@ -29,7 +30,7 @@ export function StripePaymentForm({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount,
-            anonymousId: localStorage.getItem("anonymousId"),
+            anonymousId: Cookies.get("anonymousId"),
           }),
         })
 

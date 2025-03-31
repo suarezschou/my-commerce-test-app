@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import Cookies from "js-cookie"
 
 export function OrderSummary() {
   interface CartItem {
@@ -23,7 +24,7 @@ export function OrderSummary() {
   const [cart, setCart] = useState<Cart>({
     items: [],
     subtotal: 0,
-    shipping: 5.99,
+    shipping: 5,
     tax: 0,
     total: 0,
   })
@@ -36,7 +37,7 @@ export function OrderSummary() {
         // This is a placeholder for the actual API call
         const response = await fetch("/api/cart", {
           headers: {
-            "X-Anonymous-ID": localStorage.getItem("anonymousId") || "",
+            "X-Anonymous-ID": Cookies.get("anonymousId") || "",
           },
         })
 

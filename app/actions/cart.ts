@@ -17,7 +17,7 @@ export async function createNewCart() {
 export async function addProductToCart(
   cartId: string,
   version: number,
-  productId: string,
+  productId: string, 
   variantId: number,
   quantity: number,
 )
