@@ -31,7 +31,7 @@ export function OrderSummary() {
 
   useEffect(() => {
     // In a real app, you would fetch the cart data from your API
-    // using the anonymousId from localStorage
+    // using the anonymousId from cookies
     const fetchCart = async () => {
       try {
         // This is a placeholder for the actual API call

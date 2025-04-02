@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 })
     }
 
-    const cartItems = anonymousCartObj.value.items; // Extract cart items
+    const cartItems = anonymousCartObj.value; // Extracting cart items from the custom object value array
 
     // Create the order in Commercetools
     const order = await createCommercetoolsOrder(cartItems, shippingInfo, paymentInfo);

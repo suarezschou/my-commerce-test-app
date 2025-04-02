@@ -64,12 +64,14 @@ const AddToCart: React.FC<AddToCartProps> = ({ product }) => {
 
             // Check for anonymousId and add to anonymous cart
             const anonymousId = Cookies.get('anonymousId');
+            const price = (product?.masterVariant?.prices?.[0]?.value?.centAmount ?? 0) / 100;
+
             if (anonymousId) {
-                await addToAnonymousCart(anonymousId, product.id, product.masterVariant.id, 1);
+                await addToAnonymousCart(anonymousId, product.id, product.masterVariant.id, 1, price);
                 router.push(`/cart/${currentCartId}`);
             } else {
                 // If no anonymousId, add to regular cart
-                await addProductToCart(currentCartId, currentCartVersion, product.id, product.masterVariant.id, 1);
+                await addProductToCart(currentCartId, currentCartVersion, product.id, product.masterVariant.id, 1, price);
                 router.push(`/cart/${currentCartId}`);
             }
 
@@ -90,7 +92,7 @@ const AddToCart: React.FC<AddToCartProps> = ({ product }) => {
     
     
 
-    async function addToAnonymousCart(anonymousId: string, productId: string, variantId: number, quantity: number) {
+    async function addToAnonymousCart(anonymousId: string, productId: string, variantId: number, quantity: number, price: number) {
       try {
         console.log('Sending request to add to anonymous cart:', { anonymousId, productId, variantId, quantity });
         const url = '/api/anonymous-cart';
@@ -101,7 +103,7 @@ const AddToCart: React.FC<AddToCartProps> = ({ product }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ anonymousId, productId, variantId, quantity }),
+          body: JSON.stringify({ anonymousId, productId, variantId, quantity, price }),
         });
         console.log("Response:", response);
         // Check if the request was successful

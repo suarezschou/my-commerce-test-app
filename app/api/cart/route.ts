@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     // Calculate totals based on your cart structure
     // This would need to be adjusted based on your actual data structure
     const subtotal = items.reduce((sum: number, item: { price: number; quantity: number }) => sum + item.price * item.quantity, 0)
-    const shipping = 5.99
+    const shipping = 5
     const tax = subtotal * 0.08 // Example tax calculation
     const total = subtotal + shipping + tax
 

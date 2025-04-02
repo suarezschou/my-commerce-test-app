@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie"; // Import Cookies
+import Cookies from "js-cookie";
 import { CheckoutStepper } from "../components/checkout/checkout-stepper";
 import { ShippingForm } from "../components/checkout/shipping-form";
 import { PaymentForm } from "../components/checkout/payment-form";

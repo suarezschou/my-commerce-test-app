@@ -4,11 +4,11 @@ import { apiRoot } from '../../lib/commercetools';
 export async function POST(request: Request) {
     console.log('POST request received');
     try {
-        const { anonymousId, productId, variantId, quantity } = await request.json();
+        const { anonymousId, productId, variantId, quantity, price } = await request.json();
 
-        console.log('Received request to add to anonymous cart:', { anonymousId, productId, variantId, quantity });
+        console.log('Received request to add to anonymous cart:', { anonymousId, productId, variantId, quantity, price });
 
-        await storeAnonymousCartItem(anonymousId, productId, variantId, quantity);
+        await storeAnonymousCartItem(anonymousId, productId, variantId, quantity, price);
         return NextResponse.json({ message: 'Item added to anonymous cart' });
     } catch (error) {
         console.error('Error adding to anonymous cart:', error);
@@ -52,10 +52,10 @@ export async function GET(request: Request) {
     }
 }
 
-async function storeAnonymousCartItem(anonymousId: string, productId: string, variantId: number, quantity: number) {
+async function storeAnonymousCartItem(anonymousId: string, productId: string, variantId: number, quantity: number, price: number) {
     try {
         const projectKey = process.env.CTP_PROJECT_KEY || "";
-        console.log('Storing anonymous cart item:', { anonymousId, productId, variantId, quantity });
+        console.log('Storing anonymous cart item:', { anonymousId, productId, variantId, quantity, price });
         try {
         // Check if custom object exists
         const existingCustomObject = await apiRoot
@@ -66,9 +66,7 @@ async function storeAnonymousCartItem(anonymousId: string, productId: string, va
             .execute();
 
         if (existingCustomObject.body) {
-
             // Update existing custom object
-
             const existingCart = existingCustomObject.body.value;
             const existingItemIndex = existingCart.findIndex(
                 (item: any) => item.productId === productId && item.variantId === variantId
@@ -76,12 +74,14 @@ async function storeAnonymousCartItem(anonymousId: string, productId: string, va
 
             if (existingItemIndex !== -1) {
                 existingCart[existingItemIndex].quantity += quantity;
+                // You might want to update the price here as well if it can change
+                existingCart[existingItemIndex].price = price;
             } else {
-                existingCart.push({ productId, variantId, quantity });
+                existingCart.push({ productId, variantId, quantity, price }); // Store the price
             }
 
             console.log("Updated existingCart:", existingCart);
-            
+
             await apiRoot
                     .withProjectKey({ projectKey })
                     .customObjects()
@@ -105,7 +105,7 @@ async function storeAnonymousCartItem(anonymousId: string, productId: string, va
                         body: {
                             container: 'anonymous-carts',
                             key: anonymousId,
-                            value: [{ productId, variantId, quantity }],
+                            value: [{ productId, variantId, quantity, price }], // Store the price
                         },
                     })
                     .execute();
