@@ -1,6 +1,12 @@
 "use client"
 
-import { useToast } from "@/hooks/use-toast"
+import { useState } from "react";
+
+export function useToast() {
+  const [toasts, setToasts] = useState<{ id: string; title?: string; description?: string; action?: React.ReactNode; [key: string]: any }[]>([]);
+  return { toasts, setToasts };
+}
+
 import {
   Toast,
   ToastClose,
