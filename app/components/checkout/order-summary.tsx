@@ -65,6 +65,8 @@ export function OrderSummary() {
     fetchCart()
   }, [])
 
+  console.log("Cart Items in OrderSummary:", cart.items);
+
   return (
     <Card>
       <CardHeader>

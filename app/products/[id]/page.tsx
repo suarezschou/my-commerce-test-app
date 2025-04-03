@@ -128,7 +128,7 @@ const ProductDetailsPage: React.FC = () => {
       )}
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
-            <AccordionTrigger className='text-xl'>Beskrivelse</AccordionTrigger>
+            <AccordionTrigger className='text-xl'>Read more</AccordionTrigger>
             <AccordionContent className='max-w-lg'>
               <p className='text-sm  '>{product.description?.['en-US'] || "No Description Available"}</p>
             </AccordionContent>
@@ -146,7 +146,7 @@ const ProductDetailsPage: React.FC = () => {
     </CardFooter>
   </Card>
   <CardTitle>
-  <h1 className='p-10 text-3xl'>Måske kan du også lide</h1>
+  <h1 className='p-10 text-3xl'>Related products</h1>
   </CardTitle>
   <ProductList />
     

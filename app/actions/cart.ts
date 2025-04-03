@@ -15,7 +15,7 @@ export async function createNewCart() {
 }
 
 export async function addProductToCart(
-cartId: string, version: number, productId: string, variantId: number, quantity: number,
+cartId: string, version: number, productId: string, variantId: number, quantity: number, price: number,
 )
 {
   try {

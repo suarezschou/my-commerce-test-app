@@ -121,8 +121,8 @@ const AddToCart: React.FC<AddToCartProps> = ({ product }) => {
     }
 
     return (
-        <Button className="font-thin text-3xl flex flex-row p-10" onClick={handleAddToCart} disabled={addingToCart}>
-            {addingToCart ? "Adding to Cart..." : "Tilføj til kurv"}
+        <Button className="text-3xl flex flex-row p-10" onClick={handleAddToCart} disabled={addingToCart}>
+            {addingToCart ? "Adding to Cart..." : "Add to basket"}
         </Button>
     );
 };

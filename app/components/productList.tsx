@@ -53,7 +53,7 @@ const ProductList: React.FC<ProductListProps> = ({  }) => {
   }
   console.log(products)
   return (
-    <ul className='p-10 grid grid-cols-2'>
+    <ul className='p-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
       {products.map((product) => (
         <Card key={product.id}>
           <li>
@@ -69,12 +69,12 @@ const ProductList: React.FC<ProductListProps> = ({  }) => {
               <p>Price: {product.masterVariant.prices[0].value.centAmount / 100} {product.masterVariant.prices[0].value.currencyCode}</p>
             )}
           </CardContent>
-          <CardFooter>
-            <Button>
+          <CardFooter className="flex justify-center">            
+            <Button className="p-7 w-full">
               <Link
                 href={`/products/${product.id}`}               
                 >
-                View Details
+                View product
               </Link>
             </Button>
           </CardFooter>

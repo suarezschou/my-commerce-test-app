@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { apiRoot } from '../../lib/commercetools';
+import { v4 as uuidv4 } from "uuid"
 
 export async function POST(request: Request) {
     console.log('POST request received');
@@ -56,6 +57,7 @@ async function storeAnonymousCartItem(anonymousId: string, productId: string, va
     try {
         const projectKey = process.env.CTP_PROJECT_KEY || "";
         console.log('Storing anonymous cart item:', { anonymousId, productId, variantId, quantity, price });
+        const newItem = { productId, variantId, quantity, price, id: uuidv4() };
         try {
         // Check if custom object exists
         const existingCustomObject = await apiRoot
@@ -77,7 +79,7 @@ async function storeAnonymousCartItem(anonymousId: string, productId: string, va
                 // You might want to update the price here as well if it can change
                 existingCart[existingItemIndex].price = price;
             } else {
-                existingCart.push({ productId, variantId, quantity, price }); // Store the price
+                existingCart.push(newItem); // Store the price
             }
 
             console.log("Updated existingCart:", existingCart);
@@ -105,13 +107,13 @@ async function storeAnonymousCartItem(anonymousId: string, productId: string, va
                         body: {
                             container: 'anonymous-carts',
                             key: anonymousId,
-                            value: [{ productId, variantId, quantity, price }], // Store the price
+                            value: [newItem], 
                         },
                     })
                     .execute();
                 console.log("Custom Object Creation Response:", createResponse);
             } else {
-                throw getCustomObjectError; // Re-throw other errors
+                throw getCustomObjectError; 
             }
         }
     } catch (error: any) {
