@@ -9,7 +9,6 @@ const AUTH_URL = process.env.CTP_AUTH_URL || ""
 const API_URL = process.env.CTP_API_URL || ""
 const SCOPES = (process.env.CTP_SCOPES || "").split(" ")
 
-
 try {
   if (!PROJECT_KEY || !CLIENT_ID || !CLIENT_SECRET || !AUTH_URL || !API_URL || !SCOPES) {
     throw new Error("Missing required Commercetools environment variables");
