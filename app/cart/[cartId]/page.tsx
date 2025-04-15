@@ -89,8 +89,8 @@ const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="flex-col items-center ">
-      <Card>
+    <div className="flex-col items-center sm:justify-center justify-center w-full p-3">
+      <Card className="flex flex-col items-center overflow-hidden">
         <CardHeader>
           <CardTitle>
             <h1 className="text-3xl">Your Cart</h1>
@@ -124,7 +124,7 @@ const CartPage: React.FC = () => {
           )}
         </CardContent>
         <CardFooter>
-          <Button className="text-3xl flex flex-row p-10" onClick={() => router.push("/checkout")}>
+          <Button className="text-2xl px-8 py-8" onClick={() => router.push("/checkout")}>
             Proceed to Checkout
           </Button>
         </CardFooter>

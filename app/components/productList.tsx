@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { apiRoot } from '../lib/commercetools';
+import router from 'next/router';
 
 interface ProductListProps {
   // Define any props here if needed
@@ -70,7 +71,7 @@ const ProductList: React.FC<ProductListProps> = ({  }) => {
             )}
           </CardContent>
           <CardFooter className="flex justify-center">            
-            <Button className="p-7 w-full">
+            <Button className="p-7 text-xl w-full">
               <Link
                 href={`/products/${product.id}`}               
                 >
